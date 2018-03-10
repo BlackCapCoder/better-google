@@ -1,0 +1,34 @@
+@-moz-document url-prefix("https://www.google.com/search?") {
+@media (max-width: 800px) {
+    #hdtb-msb>.hdtb-mitem:first-child, .ab_tnav_wrp, #cnt #center_col, .mw #center_col {
+        margin-left: 150px;
+        margin: 0;
+    }
+    div#center_col {
+        width: 100vw !important;
+    }
+    
+    form>div.tsf-p {
+    padding-left: 20px !important;
+}
+    #hdtb-msb > div:nth-child(2) {
+      display: none;
+                                        }
+    
+    .sfibbbc {
+    width: calc(100vw - 40px);
+}
+    #logocont {
+    display: none;
+}
+}
+
+.g {
+    padding-left: 15px;
+    outline: none;
+}
+.g.selected {
+    border-left: 5px solid orange;
+    padding-left: 10px;
+}
+}
