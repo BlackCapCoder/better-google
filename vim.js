@@ -57,7 +57,7 @@
 
         if (w == 'H' && os.length > 0) return os[0];
         if (w == 'L') return os[os.length - 1] || ix;
-        if (w == 'M') return os[Math.round((os.length-1)/2)] || ix;
+        if (w == 'M') return os[Math.floor(os.length/2)] || ix;
         return ix;
     }
 
