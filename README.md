@@ -6,18 +6,18 @@ These are some usability and slight design changes to the Google webpage.
 
 This gives you a cursor that you can use to select search results. The cursor will initially be focused on the first result, and you can press:
 
-| Key       | Function                                                                   |
-| --        | -                                                                          |
-| j         | Move cursor down                                                           |
-| k         | Move cursor up                                                             |
-| l OR <CR> | Open result under cursor                                                   |
-| g         | Move the cursor to the first result                                        |
-| G         | Move the cursor to the last result                                         |
-| zj        | Scroll so that the result under the cursor is at the bottom of the screen  |
-| zk        | Scroll so that the result under the cursor is at the top of the screen     |
-| zz        | Scroll so that the result under the cursor is centered on the screen       |
-| gi        | Focus search textbox                                                       |
-| i         | If the current result has a textbox, focus it - otherwise focus search box |
+| Key        | Function                                                                   |
+| --         | -                                                                          |
+| j          | Move cursor down                                                           |
+| k          | Move cursor up                                                             |
+| l OR enter | Open result under cursor                                                   |
+| g          | Move the cursor to the first result                                        |
+| G          | Move the cursor to the last result                                         |
+| zj         | Scroll so that the result under the cursor is at the bottom of the screen  |
+| zk         | Scroll so that the result under the cursor is at the top of the screen     |
+| zz         | Scroll so that the result under the cursor is centered on the screen       |
+| gi         | Focus search textbox                                                       |
+| i          | If the current result has a textbox, focus it - otherwise focus search box |
 
 If text is selected the cursor will move to the result in which there are selected text. This is so that I can search with `/` and `n`/`p` in Vimium and have my cursor move to the result.
 
