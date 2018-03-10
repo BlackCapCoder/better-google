@@ -19,6 +19,8 @@ This gives you a cursor that you can use to select search results. The cursor wi
 | gi         | Focus search textbox                                                       |
 | i          | If the current result has a textbox, focus it - otherwise focus search box |
 
+Additionally you can prefix `j` and `k` with a number to move `N` results up/down. For example, `12j` will move the cursor 12 results down.
+
 If text is selected the cursor will move to the result in which there are selected text. This is so that I can search with `/` and `n`/`p` in Vimium and have my cursor move to the result.
 
 This script is indented to synergize with the Vimium extension, thus why I chose `zk` and `zj` instead of `zt` and `zb`.
