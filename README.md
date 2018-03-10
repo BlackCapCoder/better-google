@@ -29,7 +29,7 @@ This script is indented to synergize with the Vimium extension, thus why I chose
 
 ### mediarule.css
 
-Somehow Google doesn't doesn't have media rules for thin screen widths - this adds that. This is also where I threw the css for `vim.js`
+Somehow Google doesn't have media rules for thin screen widths - this adds that. This is also where I threw the css for `vim.js`
 
 
 ### bookdark.css
