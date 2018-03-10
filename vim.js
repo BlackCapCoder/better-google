@@ -15,6 +15,12 @@
     let zoom = false;
     let wasg = false;
 
+    function updateHistory () {
+        const st = window.history.state;
+        st.ix = ix;
+        window.history.replaceState(st, ix);
+    }
+
     function setIx (old, _new, zoomDir) {
         //if (old == _new) return;
         ix = _new;
@@ -53,8 +59,12 @@
     }
 
     let init = _ => {
+        if (window.history.state == null)
+            window.history.replaceState({ix: ix}, ix);
+        ix = window.history.state.ix || 0;
+
         gs = document.querySelectorAll('._NId > .srg > .g, ._NId > .g');
-        if (gs.length > 0) gs[0].classList.add('selected');
+        if (gs.length > ix) gs[ix].classList.add('selected');
         for (let i = 0; i < gs.length; i++)
             gs[i].setAttribute('tabindex', '-1');
     };
@@ -64,6 +74,10 @@
     } else {
         init ();
     }
+
+    window.onbeforeunload = function() {
+        updateHistory();
+    };
 
     document.addEventListener('selectionchange', _ => {
         let s = document.getSelection();
