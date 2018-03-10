@@ -25,6 +25,7 @@ If text is selected the cursor will move to the result in which there are select
 
 This script is indented to synergize with the Vimium extension, thus why I chose `zk` and `zj` instead of `zt` and `zb`.
 
+![](vim.gif)
 
 ### mediarule.css
 
