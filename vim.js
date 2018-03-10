@@ -46,6 +46,21 @@
         if (shouldHandleKeys ()) gs[ix].focus();
     }
 
+    function selectOnscreen (w) {
+        const os = [];
+        for (let i = 0; i < gs.length; i++) {
+            const b = gs[i].getBoundingClientRect();
+            if ( b.y > 0
+              && b.y + b.height < window.innerHeight
+               ) os.push(i);
+        }
+
+        if (w == 'H' && os.length > 0) return os[0];
+        if (w == 'L') return os[os.length - 1] || ix;
+        if (w == 'M') return os[Math.round((os.length-1)/2)] || ix;
+        return ix;
+    }
+
     function shouldHandleKeys () {
         if (document.activeElement.id == 'lst-ib') return false;
 
@@ -119,6 +134,7 @@
         if (!shouldHandleKeys()) return;
 
         const old = ix;
+        let _new = old;
         let zoomDir = 't';
 
         if (zoom) {
@@ -127,11 +143,14 @@
                     : e.key == 'z' ? zoomDir = 'c'
                     : '';
         } else {
-            if (e.key == 'j') { ix = Math.min(ix+Math.max(cnt, 1), gs.length-1); cnt = 0;
-            } else if (e.key == 'k') { ix = Math.max(ix-Math.max(cnt, 1), 0); cnt = 0;
-            } else if (e.key == 'G') { ix = gs.length-1;
-            } else if (e.key == 'g') { ix = 0;
+            if (e.key == 'j') { _new = Math.min(ix+Math.max(cnt, 1), gs.length-1); cnt = 0;
+            } else if (e.key == 'k') { _new = Math.max(ix-Math.max(cnt, 1), 0); cnt = 0;
+            } else if (e.key == 'G') { _new = gs.length-1;
+            } else if (e.key == 'g') { _new = 0;
             } else if (e.key == 'z') { zoom = true; return;
+            } else if (e.key == 'H') { _new = selectOnscreen('H');
+            } else if (e.key == 'M') { _new = selectOnscreen('M');
+            } else if (e.key == 'L') { _new = selectOnscreen('L');
             } else if (!isNaN(parseInt(e.key))) {
               if (cnt == 0) {
                   cnt = e.key;
@@ -143,7 +162,8 @@
             }
         }
 
-        setIx (old, ix, zoomDir);
+        if (old != _new || zoom)
+          setIx (old, _new, zoomDir);
     });
 })();
 
