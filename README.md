@@ -1,6 +1,6 @@
 # Better Google
 
-These are some usability and slight design changes to the Google webpage.
+These are some usability and slight design changes to the Google webpage. Install the `.js` file with tampermonkey, and the `.css` files with stylish.
 
 ### vim.js
 
