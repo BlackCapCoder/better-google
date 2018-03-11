@@ -30,6 +30,8 @@ This script is indented to synergize with the Vimium extension, thus why I chose
 
 ![](vim.gif)
 
+Video with all features and more pixels: https://youtu.be/qxy6khjRoHo
+
 ### mediarule.css
 
 Somehow Google doesn't have media rules for thin screen widths - this adds that. This is also where I threw the css for `vim.js`
