@@ -44,30 +44,6 @@
 
         zoom = false;
 
-        // Set selection to start of text
-        const s = window.getSelection();
-
-        if (s.type == 'Caret') {
-          const r = document.createRange();
-          let el = gs[ix].querySelector('span.st');
-
-          while (true) {
-            const ns = el.childNodes;
-            if (ns.length == 0) break;
-            for (let n of ns) {
-                el = n;
-                if (el.tagName !== 'SPAN') break;
-            }
-          }
-
-          autoSelect = ix;
-          r.setStart(el, 0);
-          r.setEnd(el, 0);
-          r.collapse();
-          s.removeAllRanges();
-          s.addRange(r);
-        }
-
         if (shouldHandleKeys ()) gs[ix].focus();
     }
 
@@ -105,8 +81,20 @@
 
         gs = document.querySelectorAll('._NId > .srg > .g, ._NId > .g');
         if (gs.length > ix) gs[ix].classList.add('selected');
-        for (let i = 0; i < gs.length; i++)
-            gs[i].setAttribute('tabindex', '-1');
+
+        const y = window.scrollY;
+        for (const g of gs) {
+            g.setAttribute('tabindex', '-1');
+
+            // chache getBoundingClientRect
+            const b = g.getBoundingClientRect();
+            const oy = b.y;
+            g.getBoundingClientRect = function () {
+                const _y = window.scrollY;
+                b.y = oy + y - _y;
+                return b;
+            };
+        }
     };
 
     if (document.readyState == 'loading') {
@@ -151,6 +139,30 @@
             return true;
         } else if (e.key == 'Enter' || e.key == 'l') {
             gs[ix].querySelector('h3 > a').click();
+        } else if (e.key == 'j' || e.key == 'k') {
+          // Set selection to start of text
+          const s = window.getSelection();
+
+          if (s.type == 'Caret') {
+              const r = document.createRange();
+              let el = gs[ix].querySelector('span.st');
+
+              while (true) {
+                const ns = el.childNodes;
+                if (ns.length == 0) break;
+                for (let n of ns) {
+                    el = n;
+                    if (el.tagName !== 'SPAN') break;
+                }
+              }
+
+              autoSelect = ix;
+              r.setStart(el, 0);
+              r.setEnd(el, 0);
+              r.collapse();
+              s.removeAllRanges();
+              s.addRange(r);
+            }
         }
 
         wasg = e.key == 'g';
