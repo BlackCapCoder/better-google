@@ -14,6 +14,7 @@
     let gs   = [];
     let zoom = false;
     let wasg = false;
+    let autoSelect = -1;
 
     function updateHistory () {
         const st = window.history.state;
@@ -42,6 +43,30 @@
         }
 
         zoom = false;
+
+        // Set selection to start of text
+        let el = gs[ix].querySelector('span.st');
+
+        while (true) {
+            const ns = el.childNodes;
+            if (ns.length == 0) break;
+            for (let n of ns) {
+                el = n;
+                if (el.tagName !== 'SPAN') break;
+            }
+        }
+
+        const s = window.getSelection();
+
+        if (s.type == 'Caret') {
+          const r = document.createRange();
+          autoSelect = ix;
+          r.setStart(el, 0);
+          r.setEnd(el, 0);
+          r.collapse();
+          s.removeAllRanges();
+          s.addRange(r);
+        }
 
         if (shouldHandleKeys ()) gs[ix].focus();
     }
@@ -101,6 +126,7 @@
         let i = 0;
         for (; i < gs.length; i++)
             if (gs[i].contains(e)) break;
+        if (autoSelect == i) return;
         setIx (ix, i, 'c');
     });
 
