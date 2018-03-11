@@ -74,6 +74,21 @@
         return true;
     }
 
+    // chache getBoundingClientRect
+    function recalcClientRects () {
+        const y = window.scrollY;
+
+        for (const g of gs) {
+            const b = g._getBoundingClientRect();
+            const oy = b.y;
+            g.getBoundingClientRect = function () {
+                const _y = window.scrollY;
+                b.y = oy + y - _y;
+                return b;
+            };
+        }
+    }
+
     let init = _ => {
         if (window.history.state == null)
             window.history.replaceState({ix: ix}, ix);
@@ -82,19 +97,14 @@
         gs = document.querySelectorAll('._NId > .srg > .g, ._NId > .g');
         if (gs.length > ix) gs[ix].classList.add('selected');
 
-        const y = window.scrollY;
         for (const g of gs) {
             g.setAttribute('tabindex', '-1');
-
-            // chache getBoundingClientRect
-            const b = g.getBoundingClientRect();
-            const oy = b.y;
-            g.getBoundingClientRect = function () {
-                const _y = window.scrollY;
-                b.y = oy + y - _y;
-                return b;
-            };
+            g._getBoundingClientRect = g.getBoundingClientRect;
         }
+
+        // Google might expand 'people also searched for' results, but only
+        // if that result is on screen when the page loads.
+        setTimeout(recalcClientRects, 2000);
     };
 
     if (document.readyState == 'loading') {
