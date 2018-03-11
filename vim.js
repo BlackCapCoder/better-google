@@ -9,209 +9,210 @@
 // ==/UserScript==
 
 (function () {
-    let ix   = 0;
-    let cnt  = 0;
-    let gs   = [];
-    let zoom = false;
-    let wasg = false;
-    let autoSelect = -1;
+  let ix   = 0;
+  let cnt  = 0;
+  let gs   = [];
+  let zoom = false;
+  let wasg = false;
+  let autoSelect = -1;
 
-    function updateHistory () {
-        const st = window.history.state;
-        st.ix = ix;
-        window.history.replaceState(st, ix);
-    }
+  function updateHistory () {
+    const st = window.history.state;
+    st.ix = ix;
+    window.history.replaceState(st, ix);
+  }
 
-    function setIx (old, _new, zoomDir) {
-        //if (old == _new) return;
-        ix = _new;
+  function setIx (old, _new, zoomDir) {
+    //if (old == _new) return;
+    ix = _new;
 
-        gs[old].classList.remove('selected');
-        gs[ix].classList.add('selected');
+    gs[old].classList.remove('selected');
+    gs[ix].classList.add('selected');
 
-        if (ix == 0) {
-            window.scrollTo(0,0);
-        } else if (ix == gs.length-1) {
-            window.scrollTo(0, document.body.scrollHeight);
-        } else {
-            const b = gs[ix].getBoundingClientRect();
-            if (zoom || b.y < 0 || b.y + b.height >= window.innerHeight) {
-                if (zoomDir == 't') window.scrollTo(0, b.y + window.scrollY - 20);
-                if (zoomDir == 'b') window.scrollTo(0, b.y + window.scrollY - window.innerHeight + b.height + 20);
-                if (zoomDir == 'c') window.scrollTo(0, b.y + window.scrollY - window.innerHeight/2 + b.height/2);
-            }
-        }
-
-        zoom = false;
-
-        if (shouldHandleKeys ()) gs[ix].focus();
-    }
-
-    function selectOnscreen (w) {
-        const os = [];
-        for (let i = 0; i < gs.length; i++) {
-            const b = gs[i].getBoundingClientRect();
-            if ( b.y > 0
-              && b.y + b.height < window.innerHeight
-               ) os.push(i);
-        }
-
-        if (w == 'H' && os.length > 0) return os[0];
-        if (w == 'L') return os[os.length - 1] || ix;
-        if (w == 'M') return os[Math.floor(os.length/2)] || ix;
-        return ix;
-    }
-
-    function shouldHandleKeys () {
-        if (document.activeElement.id == 'lst-ib') return false;
-
-        // vimium search window
-        if ( document.activeElement.tagName == 'DIV'
-          && document.activeElement.children.length == 1
-          && document.activeElement.children[0].tagName == 'STYLE'
-           ) return false;
-
-        return true;
-    }
-
-    // chache getBoundingClientRect
-    function recalcClientRects () {
-        const y = window.scrollY;
-
-        for (const g of gs) {
-            const b = g._getBoundingClientRect();
-            const oy = b.y;
-            g.getBoundingClientRect = function () {
-                const _y = window.scrollY;
-                b.y = oy + y - _y;
-                return b;
-            };
-        }
-    }
-
-    let init = _ => {
-        if (window.history.state == null)
-            window.history.replaceState({ix: ix}, ix);
-        ix = window.history.state.ix || 0;
-
-        gs = document.querySelectorAll('._NId > .srg > .g, ._NId > .g');
-        if (gs.length > ix) gs[ix].classList.add('selected');
-
-        for (const g of gs) {
-            g.setAttribute('tabindex', '-1');
-            g._getBoundingClientRect = g.getBoundingClientRect;
-        }
-
-        // Google might expand 'people also searched for' results, but only
-        // if that result is on screen when the page loads.
-        setTimeout(recalcClientRects, 2000);
-    };
-
-    if (document.readyState == 'loading') {
-        document.addEventListener("DOMContentLoaded", init);
+    if (ix == 0) {
+      window.scrollTo(0,0);
+    } else if (ix == gs.length-1) {
+      window.scrollTo(0, document.body.scrollHeight);
     } else {
-        init ();
+      const b = gs[ix].getBoundingClientRect();
+      if (zoom || b.y < 0 || b.y + b.height >= window.innerHeight) {
+        if (zoomDir == 't') window.scrollTo(0, b.y + window.scrollY - 20);
+        if (zoomDir == 'b') window.scrollTo(0, b.y + window.scrollY - window.innerHeight + b.height + 20);
+        if (zoomDir == 'c') window.scrollTo(0, b.y + window.scrollY - window.innerHeight/2 + b.height/2);
+      }
     }
 
-    window.onbeforeunload = function() {
-        updateHistory();
-    };
+    zoom = false;
 
-    document.addEventListener('selectionchange', _ => {
-        let s = document.getSelection();
-        if (s.type != 'Range') return;
-        let e = s.focusNode.parentNode;
-        let i = 0;
-        for (; i < gs.length; i++)
-            if (gs[i].contains(e)) break;
-        if (autoSelect == i) return;
-        setIx (ix, i, 'c');
-    });
+    if (shouldHandleKeys ()) gs[ix].focus();
+  }
 
-    window.addEventListener('keyup', e => {
-        if (!shouldHandleKeys()) return;
+  function selectOnscreen (w) {
+    const os = [];
+    for (let i = 0; i < gs.length; i++) {
+      const b = gs[i].getBoundingClientRect();
+      if ( b.y > 0
+          && b.y + b.height < window.innerHeight
+         ) os.push(i);
+    }
 
-        if (e.key == 'i') {
-            let tb;
+    if (w == 'H' && os.length > 0) return os[0];
+    if (w == 'L') return os[os.length - 1] || ix;
+    if (w == 'M') return os[Math.floor(os.length/2)] || ix;
+    return ix;
+  }
 
-            if (wasg) {
-                tb = document.querySelector('#lst-ib');
-            } else {
-                tb = gs[ix].querySelector('input');
-                if (tb == null)
-                    tb = document.querySelector('#lst-ib');
-            }
+  function shouldHandleKeys () {
+    if (document.activeElement.id == 'lst-ib') return false;
 
-            tb.selectionStart = tb.value.length;
-            tb.focus();
-            wasg = false;
+    // vimium search window
+    if ( document.activeElement.tagName == 'DIV'
+        && document.activeElement.children.length == 1
+        && document.activeElement.children[0].tagName == 'STYLE'
+       ) return false;
 
-            return true;
-        } else if (e.key == 'Enter' || e.key == 'l') {
-            gs[ix].querySelector('h3 > a').click();
-        } else if (e.key == 'j' || e.key == 'k') {
-          // Set selection to start of text
-          const s = window.getSelection();
+    return true;
+  }
 
-          if (s.type == 'Caret') {
-              const r = document.createRange();
-              let el = gs[ix].querySelector('span.st');
+  // chache getBoundingClientRect
+  function recalcClientRects () {
+    const y = window.scrollY;
 
-              while (true) {
-                const ns = el.childNodes;
-                if (ns.length == 0) break;
-                for (let n of ns) {
-                    el = n;
-                    if (el.tagName !== 'SPAN') break;
-                }
-              }
+    for (const g of gs) {
+      const b = g._getBoundingClientRect();
+      const oy = b.y;
+      g.getBoundingClientRect = function () {
+        const _y = window.scrollY;
+        b.y = oy + y - _y;
+        return b;
+      };
+    }
+  }
 
-              autoSelect = ix;
-              r.setStart(el, 0);
-              r.setEnd(el, 0);
-              r.collapse();
-              s.removeAllRanges();
-              s.addRange(r);
-            }
+  let init = _ => {
+    if (window.history.state == null)
+      window.history.replaceState({ix: ix}, ix);
+    ix = window.history.state.ix || 0;
+
+    gs = document.querySelectorAll('._NId > .srg > .g, ._NId > .g');
+    if (gs.length > ix) gs[ix].classList.add('selected');
+
+    for (const g of gs) {
+      g.setAttribute('tabindex', '-1');
+      g._getBoundingClientRect = g.getBoundingClientRect;
+    }
+
+    // Google might expand 'people also searched for' results, but only
+    // if that result is on screen when the page loads.
+    setTimeout(recalcClientRects, 2000);
+  };
+
+  if (document.readyState == 'loading') {
+    document.addEventListener("DOMContentLoaded", init);
+  } else {
+    init ();
+  }
+
+  window.onbeforeunload = function() {
+    updateHistory();
+  };
+
+  document.addEventListener('selectionchange', _ => {
+    let s = document.getSelection();
+    if (s.type != 'Range') return;
+    let e = s.focusNode.parentNode;
+    let i = 0;
+    for (; i < gs.length; i++)
+      if (gs[i].contains(e)) break;
+    if (autoSelect == i) return;
+    setIx (ix, i, 'c');
+  });
+
+  window.addEventListener('keyup', e => {
+    if (!shouldHandleKeys()) return;
+
+    if (e.key == 'i') {
+      let tb;
+
+      if (wasg) {
+        tb = document.querySelector('#lst-ib');
+      } else {
+        tb = gs[ix].querySelector('input');
+        if (tb == null)
+          tb = document.querySelector('#lst-ib');
+      }
+
+      tb.selectionStart = tb.value.length;
+      tb.focus();
+      wasg = false;
+
+      return true;
+    } else if (e.key == 'Enter' || e.key == 'l') {
+      gs[ix].querySelector('h3 > a').click();
+    } else if (e.key == 'j' || e.key == 'k') {
+      // Set selection to start of text
+      const s = window.getSelection();
+
+      if (s.type == 'Caret') {
+        const r = document.createRange();
+        let el = gs[ix].querySelector('span.st');
+
+        while (true) {
+          const ns = el.childNodes;
+          if (ns.length == 0) break;
+          for (let n of ns) {
+            el = n;
+            if (el.tagName !== 'SPAN') break;
+          }
         }
 
-        wasg = e.key == 'g';
-    });
+        autoSelect = ix;
+        r.setStart(el, 0);
+        r.setEnd(el, 0);
+        r.collapse();
+        s.removeAllRanges();
+        s.addRange(r);
+      }
+    }
 
-    window.addEventListener('keydown', e => {
-        if (!shouldHandleKeys()) return;
+    wasg = e.key == 'g';
+  });
 
-        const old = ix;
-        let _new = old;
-        let zoomDir = 't';
+  window.addEventListener('keydown', e => {
+    if (!shouldHandleKeys()) return;
 
-        if (zoom) {
-            zoomDir = e.key == 'k' ? zoomDir = 't'
-                    : e.key == 'j' ? zoomDir = 'b'
-                    : e.key == 'z' ? zoomDir = 'c'
-                    : '';
+    const old = ix;
+    let _new = old;
+    let zoomDir = 't';
+
+    if (zoom) {
+      zoomDir = e.key == 'k' ? zoomDir = 't'
+      : e.key == 'j' ? zoomDir = 'b'
+      : e.key == 'z' ? zoomDir = 'c'
+      : '';
+    } else {
+      if (e.key == 'j') { _new = Math.min(ix+Math.max(cnt, 1), gs.length-1); cnt = 0; zoomDir = 't';
+      } else if (e.key == 'k') { _new = Math.max(ix-Math.max(cnt, 1), 0); cnt = 0;    zoomDir = 'b';
+      } else if (e.key == 'G') { _new = gs.length-1;
+      } else if (e.key == 'g') { _new = 0;
+      } else if (e.key == 'z') { zoom = true; return;
+      } else if (e.key == 'H') { _new = selectOnscreen('H');
+      } else if (e.key == 'M') { _new = selectOnscreen('M');
+      } else if (e.key == 'L') { _new = selectOnscreen('L');
+      } else if (!isNaN(parseInt(e.key))) {
+        if (cnt == 0) {
+          cnt = e.key;
         } else {
-            if (e.key == 'j') { _new = Math.min(ix+Math.max(cnt, 1), gs.length-1); cnt = 0;
-            } else if (e.key == 'k') { _new = Math.max(ix-Math.max(cnt, 1), 0); cnt = 0;
-            } else if (e.key == 'G') { _new = gs.length-1;
-            } else if (e.key == 'g') { _new = 0;
-            } else if (e.key == 'z') { zoom = true; return;
-            } else if (e.key == 'H') { _new = selectOnscreen('H');
-            } else if (e.key == 'M') { _new = selectOnscreen('M');
-            } else if (e.key == 'L') { _new = selectOnscreen('L');
-            } else if (!isNaN(parseInt(e.key))) {
-              if (cnt == 0) {
-                  cnt = e.key;
-              } else {
-                  cnt += e.key;
-              }
-            } else {
-                return;
-            }
+          cnt += e.key;
         }
+      } else {
+        cnt = 0;
+        return;
+      }
+    }
 
-        if (old != _new || zoom)
-          setIx (old, _new, zoomDir);
-    });
+    if (old != _new || zoom)
+      setIx (old, _new, zoomDir);
+  });
 })();
 
