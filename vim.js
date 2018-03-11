@@ -45,21 +45,21 @@
         zoom = false;
 
         // Set selection to start of text
-        let el = gs[ix].querySelector('span.st');
+        const s = window.getSelection();
 
-        while (true) {
+        if (s.type == 'Caret') {
+          const r = document.createRange();
+          let el = gs[ix].querySelector('span.st');
+
+          while (true) {
             const ns = el.childNodes;
             if (ns.length == 0) break;
             for (let n of ns) {
                 el = n;
                 if (el.tagName !== 'SPAN') break;
             }
-        }
+          }
 
-        const s = window.getSelection();
-
-        if (s.type == 'Caret') {
-          const r = document.createRange();
           autoSelect = ix;
           r.setStart(el, 0);
           r.setEnd(el, 0);
