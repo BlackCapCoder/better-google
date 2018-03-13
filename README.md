@@ -18,8 +18,8 @@ This gives you a cursor that you can use to select search results. The cursor wi
 | H          | Move cursor to highest result visible on the screen                        |
 | L          | Move cursor to lowest result visible on the screen                         |
 | M          | Move cursor to middle result visible on the screen                         |
-| zj         | Scroll so that the result under the cursor is at the bottom of the screen  |
 | zk         | Scroll so that the result under the cursor is at the top of the screen     |
+| zj         | Scroll so that the result under the cursor is at the bottom of the screen  |
 | zz         | Scroll so that the result under the cursor is centered on the screen       |
 
 Additionally you can prefix `j` and `k` with a number to move `N` results up/down. For example, `12j` will move the cursor 12 results down.
